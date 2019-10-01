@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from .common_views import negotiate_key
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('negotiate_key/', negotiate_key),
     path('', include('UserModel.urls')),
 ]

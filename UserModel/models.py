@@ -20,3 +20,7 @@ class UserModel(models.Model):
         help_text=u"这个盐值会随 timestamp 变化",
         verbose_name=u"盐值"
     )
+    A_pwd = models.CharField(max_length=128,)
+    A_e = models.CharField(max_length=128,)
+    B_pwd = models.CharField(max_length=128,)
+    B_e = models.CharField(max_length=128,)
