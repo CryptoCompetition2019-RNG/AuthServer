@@ -25,16 +25,14 @@ def register_api(request):
     crypt_sm4 = CryptSM4(SM4_DECRYPT)
     crypt_sm4.set_key(sm4_key, SM4_DECRYPT)
     plain = crypt_sm4.crypt_ecb(data)
-    if len(plain) != 64 * 7:
+    if len(plain) != 64 * 5:
         return json_response_zh(get_json_ret(41))
 
-    user = UserModel(
+    UserModel.objects.create(
         user_name=plain[:64].rstrip('\x00'),
-        A_pwd=plain[64:64 * 2],
-        A_e=plain[64 * 2:64 * 3],
+        salt=plain[64:64 * 2],
+        A_pwd=plain[64 * 2:64 * 3],
         B_pwd=plain[64 * 3:64 * 4],
-        B_e=plain[64 * 4:64 * 5],
-        hash_IMEI=plain[64 * 6:64 * 7]
+        hash_IMEI=plain[64 * 4:64 * 5]
     )
-    user.save()
     return json_response_zh(get_json_ret(0))
