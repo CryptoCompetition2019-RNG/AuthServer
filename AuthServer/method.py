@@ -21,9 +21,26 @@ def get_json_ret(code, msg=None, err=None, data=None):
         41: {"code": 41, "msg": "请求错误", "err": "请求参数错误"},
         42: {"code": 42, "msg": "请求错误", "err": "请求逻辑错误"},
         # TODO: 以 5 开头标识服务器检查错误
+        50: {"code": 50, "msg": "检查错误", "err": "认证失败"}
         # TODO: 以 6 开头表示第三方错误
     }[code]
     if err is not None: res["err"] = err
     if msg is not None: res["msg"] = msg
     if data is not None: res["data"] = data
     return res
+
+
+def encrypt_ecb(key, plain):
+    assert len(key) == 16
+    from gmssl.sm4 import CryptSM4, SM4_ENCRYPT
+    crypt_sm4 = CryptSM4(SM4_ENCRYPT)
+    crypt_sm4.set_key(key, SM4_ENCRYPT)
+    return crypt_sm4.crypt_ecb(plain)
+
+
+def decrypt_ecb(key, cipher):
+    assert len(key) == 16
+    from gmssl.sm4 import CryptSM4, SM4_DECRYPT
+    crypt_sm4 = CryptSM4(SM4_DECRYPT)
+    crypt_sm4.set_key(key, SM4_DECRYPT)
+    return crypt_sm4.crypt_ecb(cipher)

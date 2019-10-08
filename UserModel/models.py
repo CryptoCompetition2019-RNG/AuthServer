@@ -22,3 +22,7 @@ class UserModel(models.Model):
     )
     A_pwd = models.CharField(max_length=64,)
     B_pwd = models.CharField(max_length=64,)
+
+    # temporary field
+    random_value1 = models.CharField(max_length=64,)
+    random_value2 = models.CharField(max_length=64,)

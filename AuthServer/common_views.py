@@ -1,5 +1,5 @@
 from django.views.decorators.http import require_POST
-from Crypto.Util.number import getPrime
+from Crypto.Util.number import getPrime, long_to_bytes
 
 from .method import json_response_zh, get_json_ret
 
@@ -36,7 +36,7 @@ def negotiate_key2(request):
         return json_response_zh(get_json_ret(42))
 
     secret = getPrime(64)
-    request.session['DH_key'] = pow(data, secret, DH_p)
+    request.session['DH_key'] = long_to_bytes(pow(data, secret, DH_p))[:64].rjust(64, b'\x00')
     return json_response_zh(get_json_ret(0, data={
         'data': hex(pow(DH_g, secret, DH_p))
     }))
