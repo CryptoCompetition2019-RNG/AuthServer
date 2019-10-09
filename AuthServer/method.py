@@ -21,7 +21,8 @@ def get_json_ret(code, msg=None, err=None, data=None):
         41: {"code": 41, "msg": "请求错误", "err": "请求参数错误"},
         42: {"code": 42, "msg": "请求错误", "err": "请求逻辑错误"},
         # TODO: 以 5 开头标识服务器检查错误
-        50: {"code": 50, "msg": "检查错误", "err": "认证失败"}
+        50: {"code": 50, "msg": "检查错误", "err": "认证失败"},
+        51: {"code": 51, "msg": "检查错误", "err": "未登录"}
         # TODO: 以 6 开头表示第三方错误
     }[code]
     if err is not None: res["err"] = err
@@ -48,10 +49,9 @@ def decrypt_ecb(key, cipher):
 
 def make_qrcode(msg):
     from qrcode import make as make_qrcode
-    from base64 import b64encode
     from io import BytesIO
     qr_value = msg
     qr_image = make_qrcode(qr_value)
     qr_buffer = BytesIO()
     qr_image.save(qr_buffer, format='jpeg')
-    return b64encode(qr_buffer.getvalue())
+    return qr_buffer.getvalue()

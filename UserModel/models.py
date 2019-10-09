@@ -20,10 +20,10 @@ class UserModel(models.Model):
         help_text=u"这个盐值会随 timestamp 变化",
         verbose_name=u"盐值"
     )
-    A_pwd = models.CharField(max_length=64,)
-    B_pwd = models.CharField(max_length=64,)
+    A_pwd = models.CharField(max_length=64, )
+    B_pwd = models.CharField(max_length=64, )
 
     # temporary field
-    random_value1 = models.CharField(max_length=64,)
-    random_value2 = models.CharField(max_length=64,)
-    random_value3 = models.CharField(max_length=64,)
+    random_value1 = models.CharField(max_length=64, )
+    random_value2 = models.CharField(max_length=64, )
+    random_value3 = models.CharField(max_length=64, )
