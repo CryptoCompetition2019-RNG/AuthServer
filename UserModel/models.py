@@ -26,3 +26,4 @@ class UserModel(models.Model):
     # temporary field
     random_value1 = models.CharField(max_length=64,)
     random_value2 = models.CharField(max_length=64,)
+    random_value3 = models.CharField(max_length=64,)
