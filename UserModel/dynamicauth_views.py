@@ -1,5 +1,4 @@
-from django.http import HttpResponse
-from AuthServer.method import json_response_zh, get_json_ret, encrypt_ecb, decrypt_ecb, make_qrcode
+from AuthServer.method import json_response_zh, get_json_ret, encrypt_ecb, decrypt_ecb
 
 from .models import UserModel
 
@@ -9,7 +8,7 @@ def dynamicauth_api1(request):
     动态二维码验证的第一步
     :param request: 一个有效的请求应该包含形如以下的 POST 数据：
         {"data": sm4_{DH_key}( id.ljust(64, '\x00') )}
-    :return: 返回一个图片，图片包含的字符串信息是：sm4_{salt}(r3)
+    :return: {data: sm4_{salt}(r3)}
     """
     if len(request.data) != 64:
         return json_response_zh(get_json_ret(41))
@@ -23,8 +22,7 @@ def dynamicauth_api1(request):
     from Crypto.Util.number import long_to_bytes, getRandomNBitInteger
     user.random_value3 = long_to_bytes(getRandomNBitInteger(64))
     user.save()
-    qr_value = encrypt_ecb(user.salt, user.random_value3)
-    return HttpResponse(make_qrcode(qr_value), content_type='image/jpeg')
+    return json_response_zh(get_json_ret(0, data={"data": encrypt_ecb(user.salt, user.random_value3)}))
 
 
 def dynamicauth_api2(request):

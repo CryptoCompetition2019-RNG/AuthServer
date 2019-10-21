@@ -1,4 +1,5 @@
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from gmssl.sm4 import CryptSM4, SM4_ENCRYPT, SM4_DECRYPT
 from Crypto.Util.number import long_to_bytes
 

@@ -45,13 +45,13 @@ def decrypt_ecb(key, cipher):
     crypt_sm4 = CryptSM4(SM4_DECRYPT)
     crypt_sm4.set_key(key, SM4_DECRYPT)
     return crypt_sm4.crypt_ecb(cipher)
-
-
-def make_qrcode(msg):
-    from qrcode import make as make_qrcode
-    from io import BytesIO
-    qr_value = msg
-    qr_image = make_qrcode(qr_value)
-    qr_buffer = BytesIO()
-    qr_image.save(qr_buffer, format='jpeg')
-    return qr_buffer.getvalue()
+#
+#
+# def make_qrcode(msg):
+#     from qrcode import make as make_qrcode
+#     from io import BytesIO
+#     qr_value = msg
+#     qr_image = make_qrcode(qr_value)
+#     qr_buffer = BytesIO()
+#     qr_image.save(qr_buffer, format='jpeg')
+#     return qr_buffer.getvalue()
