@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from gmssl.sm4 import CryptSM4, SM4_ENCRYPT, SM4_DECRYPT
 from Crypto.Util.number import long_to_bytes
 
-from AuthServer.method import json_response_zh, get_json_ret
+from AuthServer.method import json_response_zh, get_json_ret, decrypt_ecb
 from .models import UserModel
 
 
@@ -17,13 +17,19 @@ def register_api(request):
     :return: 如果失败，则会返回相对应的错误码；如果成功返回 0
     """
     data = long_to_bytes(int(request.data, 16))
-    crypt_sm4 = CryptSM4(SM4_DECRYPT)
-    crypt_sm4.set_key(request.DH_key, SM4_DECRYPT)
-    crypt_sm4.mode = 2  # todo: set `mode` neither `SM4_ENCRYPT` nor `SM4_DECRYPT` to avoid padding
-    plain = crypt_sm4.crypt_ecb(data)
+    plain = decrypt_ecb(request.DH_key, data).decode()
     if len(plain) != 64 * 5:
         return json_response_zh(get_json_ret(41))
 
+    if UserModel.objects.filter(user_name=plain[:64]).exists():
+        from AuthServer.settings import DEBUG
+        if DEBUG:
+            user = UserModel.objects.get(user_name=plain[:64])
+            user.salt = plain[64:64*2]
+            user.A_pwd = plain[64*2:64*3]
+            user.B_pwd = plain[64*3:64*4]
+            user.save()
+        return json_response_zh(get_json_ret(0 if DEBUG else 52))
     UserModel.objects.create(
         user_name=plain[:64],
         salt=plain[64:64 * 2],

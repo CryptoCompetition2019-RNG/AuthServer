@@ -1,9 +1,12 @@
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from AuthServer.method import json_response_zh, get_json_ret, decrypt_ecb, encrypt_ecb
+from Crypto.Util.number import long_to_bytes
 
 from .models import UserModel
 
 
+@csrf_exempt
 @require_POST
 def pcauth_api1(request):
     """
@@ -11,25 +14,20 @@ def pcauth_api1(request):
     :param request: 一个有效的请求应该包含形如以下的 POST 数据：
         {"data": sm4_{DH_key}( id.ljust(64, '\x00') ) + sm4_{salt}( hex(r1) ) }
     """
-    data = request.POST.get("data")
-    if data is None:
-        return json_response_zh(get_json_ret(40))
+    data = long_to_bytes(int(request.data, 16))
     if len(data) != 64 * 2:
         return json_response_zh(get_json_ret(41))
 
-    DH_key = request.session['DH_key']
-    if DH_key is None:
-        return json_response_zh(get_json_ret(42))
-    plain = decrypt_ecb(DH_key, data)
-
-    user = UserModel.objects.get(user_name=plain[:64])
+    user_name = decrypt_ecb(request.DH_key, data[:64]).decode()
+    user = UserModel.objects.filter(user_name=user_name).first()
     if user is None:
         return json_response_zh(get_json_ret(41))
-    user.random_value1 = plain[64:]
+    user.random_value1 = decrypt_ecb(user.get_salt_sm4_key(), data[64:]).decode()
     user.save()
     return json_response_zh(get_json_ret(0))
 
 
+@csrf_exempt
 @require_POST
 def pcauth_api2(request):
     """
@@ -60,6 +58,7 @@ def pcauth_api2(request):
     return json_response_zh(get_json_ret(0, data=ret_data))
 
 
+@csrf_exempt
 @require_POST
 def pcauth_api3(request):
     """

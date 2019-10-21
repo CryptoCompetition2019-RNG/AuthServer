@@ -27,3 +27,7 @@ class UserModel(models.Model):
     random_value1 = models.CharField(max_length=64, )
     random_value2 = models.CharField(max_length=64, )
     random_value3 = models.CharField(max_length=64, )
+
+    def get_salt_sm4_key(self):
+        from Crypto.Util.number import long_to_bytes
+        return long_to_bytes(int(self.salt[:32].ljust(32, '\x00'), 16))
