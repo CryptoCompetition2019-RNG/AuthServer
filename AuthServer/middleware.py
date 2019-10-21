@@ -14,10 +14,10 @@ class AuthMiddleware(object):
 
         if not (request.path.startswith('/negotiate_key') or request.path == '/get_cookies/'):
             shared_secret = request.session.get("shared_secret")
-            if request.DH_key is None:
+            if shared_secret is None:
                 return json_response_zh(get_json_ret(42, msg="请先协商密钥"))
             from Crypto.Util.number import long_to_bytes
-            request.DH_key = long_to_bytes(shared_secret)[:64].rjust(64, b'\x00')
+            request.DH_key = long_to_bytes(shared_secret)[:32].ljust(32, b'\x00')
 
             request.data = request.json.get("data")
             if request.data is None:
