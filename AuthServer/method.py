@@ -37,6 +37,7 @@ def encrypt_ecb(key, plain):
     from gmssl.sm4 import CryptSM4, SM4_ENCRYPT
     crypt_sm4 = CryptSM4(SM4_ENCRYPT)
     crypt_sm4.set_key(key, SM4_ENCRYPT)
+    crypt_sm4.mode = 2  # todo: set `mode` neither `SM4_ENCRYPT` nor `SM4_DECRYPT` to avoid padding
     return crypt_sm4.crypt_ecb(plain)
 
 

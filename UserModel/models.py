@@ -24,9 +24,9 @@ class UserModel(models.Model):
     B_pwd = models.CharField(max_length=64, )
 
     # temporary field
-    random_value1 = models.CharField(max_length=64, )
-    random_value2 = models.CharField(max_length=64, )
-    random_value3 = models.CharField(max_length=64, )
+    random_value1 = models.CharField(max_length=64, null=True, blank=True)
+    random_value2 = models.CharField(max_length=64, null=True, blank=True)
+    random_value3 = models.CharField(max_length=64, null=True, blank=True)
 
     def get_salt_sm4_key(self):
         from Crypto.Util.number import long_to_bytes
