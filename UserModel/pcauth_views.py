@@ -40,8 +40,6 @@ def pcauth_api2(request):
     if len(data) != 64:
         return json_response_zh(get_json_ret(41))
 
-    print("cipher %s" % data.hex())
-    print("key: %s" % request.DH_key.hex())
     user_name = decrypt_ecb(request.DH_key, data).decode()
     user = UserModel.objects.filter(user_name=user_name).first()
     if user is None:

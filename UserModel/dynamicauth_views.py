@@ -45,10 +45,6 @@ def dynamicauth_api2(request):
     if len(data) != 64 * 3:
         return json_response_zh(get_json_ret(41))
 
-    print("plain: %s" % decrypt_ecb(request.DH_key, data).hex())
-    print("raw_key: %s" % hex(request.session.get('shared_secret')))
-    print("key: %s" % request.DH_key.hex())
-    print("cipher: %s" % data.hex())
     plain = decrypt_ecb(request.DH_key, data).decode()
     user_name = plain[:64]
     user = UserModel.objects.filter(user_name=user_name).first()

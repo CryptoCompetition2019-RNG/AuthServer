@@ -20,7 +20,6 @@ def mobileauth_api1(request):
     if len(data) != 64:
         return json_response_zh(get_json_ret(41))
 
-    print(decrypt_ecb(request.DH_key, data), data, request.DH_key)
     user_name = decrypt_ecb(request.DH_key, data).decode()
     user = UserModel.objects.filter(user_name=user_name).first()
     if user is None:
