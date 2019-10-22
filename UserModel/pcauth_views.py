@@ -36,26 +36,22 @@ def pcauth_api2(request):
         {"data": sm4_{DH_key}( id.ljust(64, '\x00') )}
     :return:
     """
-    data = request.POST.get("data")
-    if data is None:
-        return json_response_zh(get_json_ret(40))
+    data = long_to_bytes(int(request.data, 16))
     if len(data) != 64:
         return json_response_zh(get_json_ret(41))
 
-    DH_key = request.session['DH_key']
-    if DH_key is None:
-        return json_response_zh(get_json_ret(42))
-    user_name = decrypt_ecb(DH_key, data)
-
-    user = UserModel.objects.get(user_name=user_name)
+    print("cipher %s" % data.hex())
+    print("key: %s" % request.DH_key.hex())
+    user_name = decrypt_ecb(request.DH_key, data).decode()
+    user = UserModel.objects.filter(user_name=user_name).first()
     if user is None:
         return json_response_zh(get_json_ret(41))
     if user.random_value1 is None:
         return json_response_zh(get_json_ret(42))
     request.session['user_name'] = user_name
 
-    ret_data = encrypt_ecb(DH_key, user.random_value1+ user.A_pwd)
-    return json_response_zh(get_json_ret(0, data=ret_data))
+    ret_data = encrypt_ecb(request.DH_key, (user.random_value1 + user.A_pwd).encode())
+    return json_response_zh(get_json_ret(0, data=ret_data.hex()))
 
 
 @csrf_exempt
@@ -67,25 +63,13 @@ def pcauth_api3(request):
         {"data": sm4_{DH_key}( hex(r1) + B_pwd* )}
     :return: B_pwd* 与 B_pwd 是否相等
     """
-    data = request.POST.get("data")
-    if data is None:
-        return json_response_zh(get_json_ret(40))
+    data = long_to_bytes(int(request.data, 16))
     if len(data) != 64 * 2:
         return json_response_zh(get_json_ret(41))
 
-    user_name = request.session['user_name']
-    if user_name is None:
-        return json_response_zh(get_json_ret(42))
-    user = UserModel.objects.get(user_name=user_name)
-    if user is None:
-        return json_response_zh(get_json_ret(42))
-
-    DH_key = request.session['DH_key']
-    if DH_key is None:
-        return json_response_zh(get_json_ret(42))
-    plain = decrypt_ecb(DH_key, data)
-    if plain[:64] != user.random_value1:
+    plain = decrypt_ecb(request.DH_key, data).decode()
+    if plain[:64] != request.user.random_value1:
         return json_response_zh(get_json_ret(50, msg="随机数错误"))
-    user.random_value1 = None
-    user.save()
-    return json_response_zh(get_json_ret(0 if plain[64:] == user.B_pwd else 50))
+    request.user.random_value1 = None
+    request.user.save()
+    return json_response_zh(get_json_ret(0 if plain[64:] == request.user.B_pwd else 50))
