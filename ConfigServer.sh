@@ -65,7 +65,7 @@ server {
     }
     location / {
         uwsgi_pass  django-${PROJECT_NAME};
-        include ${SELF_PATH}/uwsgi_params;
+        include /etc/nginx/uwsgi_params;
     }
 
     error_log /var/log/nginx/error.log;
@@ -131,7 +131,8 @@ source `which virtualenvwrapper.sh`
 workon ${PROJECT_NAME}
 
 cat <(echo "yes") | python ./manage.py collectstatic
-uwsgi --ini ./uwsgi_${PROJECT_NAME,,}.ini \
+sudo chown -R www-data:www-data .
+sync uwsgi --ini ./uwsgi_${PROJECT_NAME,,}.ini \
     2> ./log/\`date +"%Y_%m_%d"\`.err.log 1> ./log/\`date +"%Y_%m_%d"\`.info.log &
 
 sudo chown www-data:www-data ${PROJECT_NAME,,}.sock
