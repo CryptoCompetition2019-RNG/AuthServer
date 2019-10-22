@@ -9,11 +9,11 @@ read -e -p "Enter IP address of your config server？/ 请输入您服务器的 
 read -e -p "Enter the deploy port of your config? / 请输出您需要部署的服务器 IP 地址："\
     -i "8085" SERVER_PORT
 read -e -p "Enter domain name of your config server / 请输入指向您服务器的域名:" \
-    -i "books.shesl.top" DOMAIN_NAME
+    -i "crypto.shesl.top" DOMAIN_NAME
 read -e -p "What is the name of your project / 您希望您项目的名称叫什么(please do not leave blank):" \
-    -i "Book" PROJECT_NAME
+    -i "AuthServer" PROJECT_NAME
 read -e -p "What is your settings directory name or django project name / Django 设置文件所在的文件夹:" \
-    -i "Book" DJANGO_PROJECT_NAME
+    -i "AuthServer" DJANGO_PROJECT_NAME
 read -e -p "What is your python virtualenv directory / 您 python 的虚拟环境在哪个地址:" \
     -i "/var/www/.virtualenvs/" WORKON_HOME
 read -e -p "Where is your frontend files / 该项目的前端文件在哪个目录下：" \
