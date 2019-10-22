@@ -12,13 +12,13 @@ class AuthMiddleware(object):
         else:
             request.json = request.POST
 
-        if not (request.path.startswith('/negotiate_key') or request.path == '/get_cookies/'):
+        if not request.path.startswith('/negotiate_key'):
             shared_secret = request.session.get("shared_secret")
             if shared_secret is None:
                 return json_response_zh(get_json_ret(42, msg="请先协商密钥"))
             from Crypto.Util.number import long_to_bytes
             request.DH_key = long_to_bytes(shared_secret)[:16].ljust(16, b'\x00')
-
+        if not request.path.startswith('/negotiate_key') and not request.path == '/dynamicauth_api3/':
             request.data = request.json.get("data")
             if request.data is None:
                 return json_response_zh(get_json_ret(40, msg="请传递 data 参数"))

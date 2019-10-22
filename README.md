@@ -32,3 +32,16 @@
 ### 服务端还存在一些问题
 
 1. 数据库设计强制让某些表项满足一定的长度
+
+## 运行
+
+```bash
+$ python --version
+3.7.4
+
+$ python -m pip install -r requirements.txt
+
+$ python manage.py migrate
+
+$ python manage.py runserver 8000
+```

@@ -15,10 +15,11 @@ def dynamicauth_api1(request):
         {"data": sm4_{DH_key}( id.ljust(64, '\x00') )}
     :return: {data: sm4_{salt}(r3)}
     """
-    if len(request.data) != 64:
+    data = long_to_bytes(int(request.data, 16))
+    if len(data) != 64:
         return json_response_zh(get_json_ret(41))
 
-    user_name = decrypt_ecb(request.DH_key, request.data)
+    user_name = decrypt_ecb(request.DH_key, data).decode()
     user = UserModel.objects.filter(user_name=user_name).first()
     if user is None:
         return json_response_zh(get_json_ret(41))
@@ -28,7 +29,7 @@ def dynamicauth_api1(request):
     user.random_value3 = hex(getRandomNBitInteger(256))[2:].ljust(64, '\x00')
     user.save()
     ret_data = encrypt_ecb(user.get_salt_sm4_key(), user.random_value3.encode())
-    return json_response_zh(get_json_ret(0, data={"data": ret_data.hex()}))
+    return json_response_zh(get_json_ret(0, data=ret_data.hex()))
 
 
 @csrf_exempt
@@ -44,6 +45,10 @@ def dynamicauth_api2(request):
     if len(data) != 64 * 3:
         return json_response_zh(get_json_ret(41))
 
+    print("plain: %s" % decrypt_ecb(request.DH_key, data).hex())
+    print("raw_key: %s" % hex(request.session.get('shared_secret')))
+    print("key: %s" % request.DH_key.hex())
+    print("cipher: %s" % data.hex())
     plain = decrypt_ecb(request.DH_key, data).decode()
     user_name = plain[:64]
     user = UserModel.objects.filter(user_name=user_name).first()
@@ -58,13 +63,14 @@ def dynamicauth_api2(request):
     from AuthServer.settings import DEBUG
     if not DEBUG:
         user.random_value3 = None
-        user.save()
-    request.session['is_login'] = True
+    user.login_status = True
+    user.save()
     return json_response_zh(get_json_ret(0, msg='登录成功'))
 
-
+@csrf_exempt
+@require_POST
 def dynamicauth_api3(request):
     """
     动态二维码验证的第三步，PC 端检查自己是否登录成功
     """
-    return json_response_zh(get_json_ret(0 if request.session.get('is_login') else 51))
+    return json_response_zh(get_json_ret(0 if request.user.login_status else 51))
