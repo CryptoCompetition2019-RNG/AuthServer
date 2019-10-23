@@ -76,7 +76,7 @@ _EOF_
 case ${NGINX_SETTING_CHOICE} in
     y|Y)
     sudo mv tmp /etc/nginx/sites-available/${PROJECT_NAME}.conf
-    sudo ln -sf /etc/nginx/sites-available/${PROJECT_NAME}.conf /etc/nginx/sites-enabled/
+    en${PROJECT_NAME}.conf /etc/nginx/sites-enabled/
     sudo systemctl restart nginx
         ;;
     *) echo "nginx not config." ;;
