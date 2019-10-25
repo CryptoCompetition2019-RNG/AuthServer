@@ -11,7 +11,7 @@ class UserModel(models.Model):
     )
     hash_IMEI = models.CharField(
         max_length=64,
-        unique=True,
+        # unique=True,
         help_text=u"手机标示码的哈希值，要求唯一标示（应当选取一个避免哈希碰撞的函数）",
         verbose_name=u"IMEI码哈希值"
     )

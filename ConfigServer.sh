@@ -35,6 +35,7 @@ sudo /usr/bin/python3.6 -m pip install virtualenv virtualenvwrapper
 export PYTHON=python3.6
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.6
 source `which virtualenvwrapper.sh`
+sudo chown -R www-data:www-data .
 
 case ${VIRTUALENV_CHOICE} in
     y|Y)
@@ -43,6 +44,7 @@ case ${VIRTUALENV_CHOICE} in
     *) workon ${PROJECT_NAME} ;;
 esac
 pip install -r ./requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+python manage.py migrate
 
 cat << _EOF_ > tmp
 upstream django-${PROJECT_NAME} {
@@ -131,7 +133,6 @@ source `which virtualenvwrapper.sh`
 workon ${PROJECT_NAME}
 
 cat <(echo "yes") | python ./manage.py collectstatic
-sudo chown -R www-data:www-data .
 sync uwsgi --ini ./uwsgi_${PROJECT_NAME,,}.ini \
     2> ./log/\`date +"%Y_%m_%d"\`.err.log 1> ./log/\`date +"%Y_%m_%d"\`.info.log &
 
