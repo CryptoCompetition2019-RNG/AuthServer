@@ -56,12 +56,11 @@ def dynamicauth_api2(request):
         return json_response_zh(get_json_ret(50, msg="手机 IMEI 码验证失败"))
     if user.random_value3 != plain[64 * 2: 64 * 3]:
         return json_response_zh(get_json_ret(50, msg="随机数验证错误"))
-    from AuthServer.settings import DEBUG
-    if not DEBUG:
-        user.random_value3 = None
+    user.random_value3 = None
     user.login_status = True
     user.save()
     return json_response_zh(get_json_ret(0, msg='登录成功'))
+
 
 @csrf_exempt
 @require_POST

@@ -133,8 +133,8 @@ source `which virtualenvwrapper.sh`
 workon ${PROJECT_NAME}
 
 cat <(echo "yes") | python ./manage.py collectstatic
-sync uwsgi --ini ./uwsgi_${PROJECT_NAME,,}.ini \
-    2> ./log/\`date +"%Y_%m_%d"\`.err.log 1> ./log/\`date +"%Y_%m_%d"\`.info.log &
+sync $(uwsgi --ini ./uwsgi_${PROJECT_NAME,,}.ini \
+    2> ./log/\`date +"%Y_%m_%d"\`.err.log 1> ./log/\`date +"%Y_%m_%d"\`.info.log &)
 
 sudo chown www-data:www-data ${PROJECT_NAME,,}.sock
 _EOF_

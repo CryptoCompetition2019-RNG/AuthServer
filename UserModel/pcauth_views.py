@@ -68,6 +68,10 @@ def pcauth_api3(request):
     plain = decrypt_ecb(request.DH_key, data).decode()
     if plain[:64] != request.user.random_value1:
         return json_response_zh(get_json_ret(50, msg="随机数错误"))
+    assert isinstance(request.user, UserModel)
+    if plain[64:] != request.user.B_pwd:
+        return json_response_zh(get_json_ret(50))
     request.user.random_value1 = None
+    request.user.login_status = True
     request.user.save()
-    return json_response_zh(get_json_ret(0 if plain[64:] == request.user.B_pwd else 50))
+    return json_response_zh(get_json_ret(0))
