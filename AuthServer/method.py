@@ -7,7 +7,6 @@ def json_response_zh(json_data):
     :param json_data: 需要返回的数据
     """
     import json
-    print("response: %s" % json.dumps(json_data, indent=2))
     return JsonResponse(json_data, json_dumps_params={'ensure_ascii': False})
 
 
@@ -25,7 +24,8 @@ def get_json_ret(code, msg=None, err=None, data=None):
         # TODO: 以 5 开头标识服务器检查错误
         50: {"code": 50, "msg": "检查错误", "err": "认证失败"},
         51: {"code": 51, "msg": "检查错误", "err": "未登录"},
-        52: {"code": 52, "msg": "检查错误", "err": "注册失败"}
+        52: {"code": 52, "msg": "检查错误", "err": "注册失败"},
+        53: {"code": 53, "msg": "检查错误", "err": "DEBUG未开启"},
         # TODO: 以 6 开头表示第三方错误
     }[code]
     if err is not None: res["err"] = err

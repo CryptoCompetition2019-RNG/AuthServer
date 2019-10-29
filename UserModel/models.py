@@ -30,6 +30,6 @@ class UserModel(models.Model):
 
     login_status = models.BooleanField(default=False, null=True)
 
-    def get_salt_sm4_key(self):
+    def get_salt_sm4_key(self) -> bytes:
         from Crypto.Util.number import long_to_bytes
         return long_to_bytes(int(self.salt[:32].ljust(32, '\x00'), 16))

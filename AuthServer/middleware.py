@@ -18,6 +18,7 @@ class AuthMiddleware(object):
                 return json_response_zh(get_json_ret(42, msg="请先协商密钥"))
             from Crypto.Util.number import long_to_bytes
             request.DH_key = long_to_bytes(shared_secret)[:16].ljust(16, b'\x00')
+
         if not request.path.startswith('/negotiate_key') and not request.path == '/dynamicauth_api3/':
             request.data = request.json.get("data")
             if request.data is None:

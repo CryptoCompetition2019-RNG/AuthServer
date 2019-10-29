@@ -45,16 +45,16 @@ def dynamicauth_api2(request):
     if len(data) != 64 * 3:
         return json_response_zh(get_json_ret(41))
 
-    plain = decrypt_ecb(request.DH_key, data).decode()
-    user_name = plain[:64]
+    plain = decrypt_ecb(request.DH_key, data)
+    user_name = plain[:64].decode()
     user = UserModel.objects.filter(user_name=user_name).first()
     if user is None:
         return json_response_zh(get_json_ret(41))
     request.session['user_name'] = user_name
 
-    if user.hash_IMEI != plain[64: 64 * 2]:
+    if user.hash_IMEI != plain[64: 64 * 2].decode():
         return json_response_zh(get_json_ret(50, msg="手机 IMEI 码验证失败"))
-    if user.random_value3 != plain[64 * 2: 64 * 3]:
+    if user.random_value3.encode() != plain[64 * 2: 64 * 3]:
         return json_response_zh(get_json_ret(50, msg="随机数验证错误"))
     user.random_value3 = None
     user.login_status = True

@@ -45,3 +45,24 @@ def negotiate_key2(request):
     secret = getPrime(64)
     request.session['shared_secret'] = pow(data, secret, DH_p)
     return json_response_zh(get_json_ret(0, data=hex(pow(DH_g, secret, DH_p))[2:]))
+
+
+@csrf_exempt
+@require_POST
+def ask_salt(request):
+    """
+    在 DEBUG 状态下传入 username, 查询 salt 信息
+    :param request: 明文传输的 64 个字节 username
+    :return: 如果开启 debug 模式，则返回 hex(user_salt_key)
+    """
+    from .settings import DEBUG
+    if not DEBUG:
+        return json_response_zh(get_json_ret(53))
+    if len(request.data) != 64:
+        return json_response_zh(get_json_ret(41))
+    from UserModel.models import UserModel
+    user = UserModel.objects.filter(user_name=request.data).first()
+    if user is None:
+        return json_response_zh(get_json_ret(41))
+    assert isinstance(user, UserModel)
+    return json_response_zh(get_json_ret(0, data=user.get_salt_sm4_key().hex() ))
